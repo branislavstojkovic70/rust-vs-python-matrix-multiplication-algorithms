@@ -48,6 +48,20 @@ fn subtract_matrices(a: &Matrix, b: &Matrix) -> Matrix {
     result
 }
 
+fn iterative_multiply(a: &Matrix, b: &Matrix) -> Matrix {
+    let n = a.len();
+    let mut result = create_zero_matrix(n);
+    
+    for i in 0..n {
+        for j in 0..n {
+            for k in 0..n {
+                result[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+    result
+}
+
 fn main() {
     println!("Main start - Rust Implementation");
 }
