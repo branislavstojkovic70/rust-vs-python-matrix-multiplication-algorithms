@@ -48,3 +48,14 @@ def set_submatrix(result: list, submatrix: list, row_start: int, col_start: int)
         for j in range(size):
             result[row_start + i][col_start + j] = submatrix[i][j]
 
+def iterative_multiply(a: list, b: list) -> list:
+    """Standard iterative matrix multiplication O(n^3)"""
+    n = len(a)
+    result = create_zero_matrix(n)
+
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                result[i][j] += a[i][k] * b[k][j]
+
+    return result
