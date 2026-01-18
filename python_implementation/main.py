@@ -2,6 +2,7 @@ import random
 import time
 from multiprocessing import Pool, cpu_count
 
+
 def create_random_matrix(n: int) -> list:
     """Create a random n x n matrix"""
     return [[random.uniform(0, 10) for _ in range(n)] for _ in range(n)]
@@ -48,6 +49,7 @@ def set_submatrix(result: list, submatrix: list, row_start: int, col_start: int)
         for j in range(size):
             result[row_start + i][col_start + j] = submatrix[i][j]
 
+
 def iterative_multiply(a: list, b: list) -> list:
     """Standard iterative matrix multiplication O(n^3)"""
     n = len(a)
@@ -59,6 +61,7 @@ def iterative_multiply(a: list, b: list) -> list:
                 result[i][j] += a[i][k] * b[k][j]
 
     return result
+
 
 def divide_conquer_multiply(a: list, b: list) -> list:
     """Divide & Conquer matrix multiplication (sequential)"""
@@ -103,6 +106,7 @@ def divide_conquer_multiply(a: list, b: list) -> list:
     set_submatrix(result, c22, half, half)
 
     return result
+
 
 def _multiply_task(args):
     a, b = args
@@ -152,6 +156,7 @@ def divide_conquer_parallel(a: list, b: list) -> list:
 
     return result
 
+
 def strassen_multiply(a: list, b: list) -> list:
     """Strassen matrix multiplication (sequential)"""
     n = len(a)
@@ -191,3 +196,45 @@ def strassen_multiply(a: list, b: list) -> list:
     set_submatrix(result, c22, half, half)
 
     return result
+
+
+def benchmark_algorithm(name: str, a: list, b: list, algorithm):
+    print("\n" + "=" * 50)
+    print(f"Testing: {name}")
+    print("=" * 50)
+
+    start = time.time()
+    result = algorithm(a, b)
+    end = time.time()
+
+    print(f"Execution time: {end - start:.3f} seconds")
+    print_matrix_sample(result, "Result")
+
+    return end - start
+
+
+def main():
+    print("\nPYTHON IMPLEMENTATION - MATRIX MULTIPLICATION\n")
+    print(f"Available CPU cores: {cpu_count()}\n")
+
+    sizes = [128, 256, 512]
+
+    for size in sizes:
+        print("\n" + "=" * 60)
+        print(f"TESTING MATRICES {size}x{size}")
+        print("=" * 60)
+
+        a = create_random_matrix(size)
+        b = create_random_matrix(size)
+
+        benchmark_algorithm("Iterative", a, b, iterative_multiply)
+
+        if size >= 256:
+            benchmark_algorithm("Divide & Conquer (Sequential)", a, b, divide_conquer_multiply)
+            benchmark_algorithm("Divide & Conquer (Parallel)", a, b, divide_conquer_parallel)
+            benchmark_algorithm("Strassen (Sequential)", a, b, strassen_multiply)
+
+    print("\nAll tests completed.\n")
+
+if __name__ == "__main__":
+    main()
