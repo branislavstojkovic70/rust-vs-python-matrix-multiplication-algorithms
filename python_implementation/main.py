@@ -225,15 +225,14 @@ def strassen_parallel(a: list, b: list) -> list:
     b21 = get_submatrix(b, half, 0, half)
     b22 = get_submatrix(b, half, half, half)
 
-    # Prepare 7 Strassen tasks for parallel execution
     tasks = [
-        (add_matrices(a11, a22), add_matrices(b11, b22)),  # m1
-        (add_matrices(a21, a22), b11),                      # m2
-        (a11, subtract_matrices(b12, b22)),                 # m3
-        (a22, subtract_matrices(b21, b11)),                 # m4
-        (add_matrices(a11, a12), b22),                      # m5
-        (subtract_matrices(a21, a11), add_matrices(b11, b12)),  # m6
-        (subtract_matrices(a12, a22), add_matrices(b21, b22)),  # m7
+        (add_matrices(a11, a22), add_matrices(b11, b22)),  
+        (add_matrices(a21, a22), b11),                      
+        (a11, subtract_matrices(b12, b22)),                
+        (a22, subtract_matrices(b21, b11)),                 
+        (add_matrices(a11, a12), b22),                      
+        (subtract_matrices(a21, a11), add_matrices(b11, b12)),  
+        (subtract_matrices(a12, a22), add_matrices(b21, b22)),  
     ]
 
     with Pool(processes=min(7, cpu_count())) as pool:
@@ -256,10 +255,6 @@ def strassen_parallel(a: list, b: list) -> list:
 
 
 def benchmark_algorithm(name: str, a: list, b: list, algorithm):
-    print("\n" + "=" * 50)
-    print(f"Testing: {name}")
-    print("=" * 50)
-
     start = time.time()
     result = algorithm(a, b)
     end = time.time()
@@ -271,16 +266,11 @@ def benchmark_algorithm(name: str, a: list, b: list, algorithm):
 
 
 def main():
-    print("\nPYTHON IMPLEMENTATION - MATRIX MULTIPLICATION\n")
-    print(f"Available CPU cores: {cpu_count()}\n")
+    print("\nPython implementation - MAIN\n")
 
     sizes = [128, 256, 512]
 
     for size in sizes:
-        print("\n" + "=" * 60)
-        print(f"TESTING MATRICES {size}x{size}")
-        print("=" * 60)
-
         a = create_random_matrix(size)
         b = create_random_matrix(size)
 
