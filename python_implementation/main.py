@@ -1,5 +1,7 @@
 import random
 import time
+import psutil
+import os
 from multiprocessing import Pool, cpu_count
 
 
@@ -48,6 +50,12 @@ def set_submatrix(result: list, submatrix: list, row_start: int, col_start: int)
     for i in range(size):
         for j in range(size):
             result[row_start + i][col_start + j] = submatrix[i][j]
+
+
+def get_memory_usage() -> int:
+    """Get current process memory usage in bytes"""
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss
 
 
 def iterative_multiply(a: list, b: list) -> list:
@@ -255,34 +263,46 @@ def strassen_parallel(a: list, b: list) -> list:
 
 
 def benchmark_algorithm(name: str, a: list, b: list, algorithm):
+    print(f"\nTesting: {name}")
+    
+    mem_before = get_memory_usage()
     start = time.time()
+    
     result = algorithm(a, b)
+    
     end = time.time()
-
-    print(f"Execution time: {end - start:.3f} seconds")
+    mem_after = get_memory_usage()
+    
+    mem_used = max(0, mem_after - mem_before)
+    
+    print(f"Time to execute: {end - start:.3f} sec")
+    print(f"Memory: ~{mem_used // 1_000_000} MB")
+    
     print_matrix_sample(result, "Result")
-
+    
     return end - start
 
 
 def main():
-    print("\nPython implementation - MAIN\n")
+    print("\nPython Implementation - MAIN\n")
 
     sizes = [128, 256, 512]
 
     for size in sizes:
+        print(f"TESTING MATRICES {size}x{size}")
+        
         a = create_random_matrix(size)
         b = create_random_matrix(size)
 
-        benchmark_algorithm("Iterative", a, b, iterative_multiply)
+        benchmark_algorithm("1. Iterative Algorithm", a, b, iterative_multiply)
 
         if size >= 256:
-            benchmark_algorithm("Divide & Conquer (Sequential)", a, b, divide_conquer_multiply)
-            benchmark_algorithm("Divide & Conquer (Parallel)", a, b, divide_conquer_parallel)
-            benchmark_algorithm("Strassen (Sequential)", a, b, strassen_multiply)
-            benchmark_algorithm("Strassen (Parallel)", a, b, strassen_parallel)
+            benchmark_algorithm("2. Divide & Conquer (Sequential)", a, b, divide_conquer_multiply)
+            benchmark_algorithm("3. Divide & Conquer (Parallel)", a, b, divide_conquer_parallel)
+            benchmark_algorithm("4. Strassen (Sequential)", a, b, strassen_multiply)
+            benchmark_algorithm("5. Strassen (Parallel)", a, b, strassen_parallel)
 
-    print("\nAll tests completed.\n")
+    print("\n\nAll tests completed.\n")
 
 if __name__ == "__main__":
     main()
